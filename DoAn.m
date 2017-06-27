@@ -1,6 +1,6 @@
 function DoAn()
 
-tempdir = 'D:\Education\HK4\RecogImage\DoAn\Data';
+tempdir = 'D:\vra-project\Data';
 % Location of the compressed data set
 url = 'http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz';
 % Store the output in a temporary folder
