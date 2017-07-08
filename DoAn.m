@@ -1,5 +1,4 @@
 function DoAn()
-
 tempdir = 'D:\vra-project\Data';
 % Location of the compressed data set
 url = 'http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz';
