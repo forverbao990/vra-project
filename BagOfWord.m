@@ -47,6 +47,5 @@ fprintf("Evaluate matrix....");
 confMatrixTest = evaluate(categoryClassifier, imds);
 mean(diag(confMatrixTest));
 
-
 end
 

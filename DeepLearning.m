@@ -7,15 +7,15 @@ imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource', 'folderna
 imds.ReadFcn = @readFunctionTrain;
 
 tbl = countEachLabel(imds);
-%minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a category = 5000
-minSetCount = 50;
+minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a category = 5000
+%minSetCount = 50;
 
 % Use splitEachLabel method to trim the set.
-if exist('Bow_imds.mat','file') == 2
-    load('Bow_imds.mat');
+if exist('deep_imds.mat','file') == 2
+    load('deep_imds.mat');
 else
     imds = splitEachLabel(imds, minSetCount, 'randomize');
-    save('Bow_imds.mat','imds');
+    save('deep_imds.mat','imds');
 end
 
 minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a category
@@ -54,7 +54,9 @@ figure
 montage(w1)
 title('First convolutional layer weights')
 
-featureLayer = 'fc7';
+%featureLayer = 'fc7'; %4096 fully connected layer
+featureLayer = 'fc8'; % 1000 fully connected layer
+
 trainingFeatures = activations(net, trainingSet, featureLayer, ...
     'MiniBatchSize', 32, 'OutputAs', 'columns');
 
