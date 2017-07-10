@@ -1,21 +1,22 @@
 function DeepLearning()
-tempdir = 'D:\vra-project\Data';
-% Location of the compressed data set
-url = 'http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz';
-% Store the output in a temporary folder
-outputFolder = fullfile(tempdir, 'caltech101');
 
-if ~exist(outputFolder, 'dir') % download only once
-    disp('Downloading 126MB Caltech101 data set...');
-    untar(url, outputFolder);
-end
-
-% Select categories
-rootFolder = fullfile(outputFolder, '101_ObjectCategories');
-categories = {'airplanes', 'ferry', 'laptop','chair','cup','lotus'};
-
+% Set training data
+rootFolder = 'cifar10Train';
+categories = {'Deer','Dog','Frog','Cat','Ship'};
 imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource', 'foldernames');
-tbl = countEachLabel(imds)
+imds.ReadFcn = @readFunctionTrain;
+
+tbl = countEachLabel(imds);
+%minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a category = 5000
+minSetCount = 50;
+
+% Use splitEachLabel method to trim the set.
+if exist('Bow_imds.mat','file') == 2
+    load('Bow_imds.mat');
+else
+    imds = splitEachLabel(imds, minSetCount, 'randomize');
+    save('Bow_imds.mat','imds');
+end
 
 minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a category
 

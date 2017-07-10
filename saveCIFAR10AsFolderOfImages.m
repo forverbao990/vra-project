@@ -55,7 +55,7 @@ load(fullInputBatchPath);
 data = data'; %#ok<NODEF>
 data = reshape(data, 32,32,3,[]);
 data = permute(data, [2 1 3 4]);
-for i = 1:size(data,4)
+for i = 1:size(data,4)   
     imwrite(data(:,:,:,i), fullfile(fullOutputDirectoryPath, labelNames{labels(i)+1}, ['image' num2str(i + nameIndexOffset) '.png']));
 end
 end
