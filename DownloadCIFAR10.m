@@ -18,7 +18,7 @@ if exist(testFolder,'dir') == 7
 end
 
 if exist('cifar-10-batches-mat','dir') == 7
-    rmdir(fullfile('cifar-10-batches-mat'),'dir');
+    rmdir(fullfile('cifar-10-batches-mat'),'s');
 end
 
 %% Download the CIFAR-10 dataset

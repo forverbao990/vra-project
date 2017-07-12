@@ -36,6 +36,7 @@ mkdir(fullfile(outputPath, testDirectoryName));
 
 if(labelDirectories)
     labelNames = {'airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck'};
+    %labelNames = {'cat','deer','dog','frog','ship'};
     iMakeTheseDirectories(fullfile(outputPath, trainDirectoryName), labelNames);
     iMakeTheseDirectories(fullfile(outputPath, testDirectoryName), labelNames);
     for i = 1:5
@@ -55,7 +56,8 @@ load(fullInputBatchPath);
 data = data'; %#ok<NODEF>
 data = reshape(data, 32,32,3,[]);
 data = permute(data, [2 1 3 4]);
-for i = 1:size(data,4)   
+%for i = 1:size(data,4)   
+for i = 1:1000
     imwrite(data(:,:,:,i), fullfile(fullOutputDirectoryPath, labelNames{labels(i)+1}, ['image' num2str(i + nameIndexOffset) '.png']));
 end
 end
@@ -65,7 +67,8 @@ load(fullInputBatchPath);
 data = data'; %#ok<NODEF>
 data = reshape(data, 32,32,3,[]);
 data = permute(data, [2 1 3 4]);
-for i = 1:size(data,4)
+%for i = 1:size(data,4)
+for i = 1:1000
     imwrite(data(:,:,:,i), fullfile(fullOutputDirectoryPath, ['image' num2str(i + nameIndexOffset) '.png']));
 end
 end
