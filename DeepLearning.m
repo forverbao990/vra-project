@@ -55,7 +55,8 @@ montage(w1)
 title('First convolutional layer weights')
 
 %featureLayer = 'fc7'; %4096 fully connected layer
-featureLayer = 'fc8'; % 1000 fully connected layer
+%featureLayer = 'fc8'; % 1000 fully connected layer
+featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
 
 trainingFeatures = activations(net, trainingSet, featureLayer, ...
     'MiniBatchSize', 32, 'OutputAs', 'columns');

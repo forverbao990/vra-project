@@ -1,98 +1,72 @@
 function HOG_Features()
+% Set training data
+rootFolder = 'cifar10Train';
+categories = {'Deer','Dog','Frog','Cat','Ship'};
+trainingSet = imageDatastore(fullfile(rootFolder, categories),'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+trainingSet.ReadFcn = @readFunctionTrain;
 
-tempdir = 'D:\vra-project\Data';
-% Location of the compressed data set
-url = 'http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz';
-% Store the output in a temporary folder
-outputFolder = fullfile(tempdir, 'caltech101');
+testFolder = 'cifar10Test';
+testSet    = imageDatastore(fullfile(testFolder, categories), 'IncludeSubfolders', true,'LabelSource', 'foldernames');
+testSet.ReadFcn = @readFunctionTrain;
 
-if ~exist(outputFolder, 'dir') % download only once
-    disp('Downloading 126MB Caltech101 data set...');
-    untar(url, outputFolder);
+countEachLabel(trainingSet)
+countEachLabel(testSet)
+
+img = readimage(trainingSet, 1);
+
+% Extract HOG features and HOG visualization
+%[hog_2x2, vis2x2] = extractHOGFeatures(img,'CellSize',[2 2]);
+[hog_4x4, vis4x4] = extractHOGFeatures(img,'CellSize',[4 4]);
+
+cellSize = [4 4];
+hogFeatureSize = length(hog_4x4);
+
+numImages = numel(trainingSet.Files);
+trainingFeatures = zeros(numImages, hogFeatureSize, 'single');
+fprintf("\nExtract HOG Features from training set....");
+
+
+if exist('trainingFeatures.mat','file') == 2
+    load('trainingFeatures.mat');
+else
+    for i = 1:numImages
+    img = readimage(trainingSet, i);
+
+    img = rgb2gray(img);
+
+    % Apply pre-processing steps
+    img = imbinarize(img);
+    trainingFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);
+    end
+    save('trainingFeatures.mat','trainingFeatures');
 end
 
-rootFolder = fullfile(outputFolder, '101_ObjectCategories');
-%categories = {'airplanes', 'ferry', 'laptop','chair','cup','lotus'};
-categories = {'airplanes', 'ferry', 'laptop'};
-imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource', 'foldernames');
-tbl = countEachLabel(imds)
-
-minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a category
-
-% Use splitEachLabel method to trim the set.
-imds = splitEachLabel(imds, minSetCount, 'randomize');
-
-% Notice that each set now has exactly the same number of images.
-countEachLabel(imds)
-
-% Find the first instance of an image for each category
-% airplanes = find(imds.Labels == 'airplanes', 1);
-% ferry = find(imds.Labels == 'ferry', 1);
-% laptop = find(imds.Labels == 'laptop', 1);
-% 
-% figure
-% subplot(1,3,1);
-% imshow(readimage(imds,airplanes))
-% subplot(1,3,2);
-% imshow(readimage(imds,ferry))
-% subplot(1,3,3);
-% imshow(readimage(imds,laptop))
-
-net = alexnet()
-% Inspect the first layer
-net.Layers(1)
-
-% Inspect the last layer
-net.Layers(end)
-
-% Number of class names for ImageNet classification task
-numel(net.Layers(end).ClassNames)
-
-% Set the ImageDatastore ReadFcn
-imds.ReadFcn = @(filename)readAndPreprocessImage(filename);
-
-[trainingSet, testSet] = splitEachLabel(imds, 0.3, 'randomize');
-
-% Get the network weights for the second convolutional layer
-w1 = net.Layers(2).Weights;
-
-% Scale and resize the weights for visualization
-w1 = mat2gray(w1);
-w1 = imresize(w1,5);
-
-% Display a montage of network weights. There are 96 individual sets of
-% weights in the first layer.
-figure
-montage(w1)
-title('First convolutional layer weights')
-
-featureLayer = 'fc7';
-trainingFeatures = activations(net, trainingSet, featureLayer, ...
-    'MiniBatchSize', 32, 'OutputAs', 'columns');
-
-% Get training labels from the trainingSet
+% Get labels for each image.
 trainingLabels = trainingSet.Labels;
 
-% Train multiclass SVM classifier using a fast linear solver, and set
-% 'ObservationsIn' to 'columns' to match the arrangement used for training
-% features.
-classifier = fitcecoc(trainingFeatures, trainingLabels, ...
-    'Learners', 'Linear', 'Coding', 'onevsall', 'ObservationsIn', 'columns');
+if exist('classifier.mat','file') == 2
+    load('classifier.mat');
+else
+    % fitcecoc uses SVM learners and a 'One-vs-One' encoding scheme.
+    classifier = fitcecoc(trainingFeatures, trainingLabels);
+    save('classifier.mat','classifier');
+end
 
-% Extract test features using the CNN
-testFeatures = activations(net, testSet, featureLayer, 'MiniBatchSize',32);
+% Extract HOG features from the test set. The procedure is similar to what
+% was shown earlier and is encapsulated as a helper function for brevity.
+fprintf("\nExtract HOG Features from test set....");
+[testFeatures, testLabels] = helperExtractHOGFeaturesFromImageSet(testSet, hogFeatureSize, cellSize);
 
-% Pass CNN image features to trained classifier
+% Make class predictions using the test features.
 predictedLabels = predict(classifier, testFeatures);
 
-% Get the known labels
-testLabels = testSet.Labels;
-
 % Tabulate the results using a confusion matrix.
-confMat = confusionmat(testLabels, predictedLabels);
-
+fprintf("\nShow result matrix....");
+[confMat,order] = confusionmat(testLabels, predictedLabels);
+fprintf('\n');
 % Convert confusion matrix into percentage form
-confMat = bsxfun(@rdivide,confMat,sum(confMat,2))
+%confMat = bsxfun(@rdivide,confMat,sum(confMat,2));
+DisplayConfusionMatrix(confMat, order)
 
 % Display the mean accuracy
 mean(diag(confMat))
