@@ -1,11 +1,30 @@
 function HOG_Features()
-% Set training data
+
+%% Check data
 rootFolder = 'cifar10Train';
+testFolder = 'cifar10Test';
+
+if exist(rootFolder,'dir') ~= 7    
+    fprintf("\nNo data train, please run DownloadCIFAR10 file... \n");
+    return;
+end
+
+if exist(testFolder,'dir') ~= 7
+      fprintf("\nNo data Test, please run DownloadCIFAR10 file... \n");
+        return;
+end
+
+if exist('cifar-10-batches-mat','dir') ~= 7
+      fprintf("\nNo cifar-10-batches-mat folder , please run DownloadCIFAR10 file... \n");
+        return;
+end  
+
+% Set training data
 categories = {'Deer','Dog','Frog','Cat','Ship'};
 trainingSet = imageDatastore(fullfile(rootFolder, categories),'IncludeSubfolders', true, 'LabelSource', 'foldernames');
 trainingSet.ReadFcn = @readFunctionTrain;
 
-testFolder = 'cifar10Test';
+
 testSet    = imageDatastore(fullfile(testFolder, categories), 'IncludeSubfolders', true,'LabelSource', 'foldernames');
 testSet.ReadFcn = @readFunctionTrain;
 

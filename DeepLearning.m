@@ -1,7 +1,26 @@
 function DeepLearning()
 
-% Set training data
+%% Check data
 rootFolder = 'cifar10Train';
+testFolder = 'cifar10Test';
+
+if exist(rootFolder,'dir') ~= 7    
+    fprintf("\nNo data train, please run DownloadCIFAR10 file... \n");
+    return;
+end
+
+if exist(testFolder,'dir') ~= 7
+    fprintf("\nNo data Test, please run DownloadCIFAR10 file... \n");
+    return;
+end
+
+if exist('cifar-10-batches-mat','dir') ~= 7
+    fprintf("\nNo cifar-10-batches-mat folder , please run DownloadCIFAR10 file... \n");
+    return;
+end 
+
+% Set training data
+%rootFolder = 'cifar10Train';
 categories = {'Deer','Dog','Frog','Cat','Ship'};
 imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource', 'foldernames');
 imds.ReadFcn = @readFunctionTrain;
@@ -42,17 +61,17 @@ imds.ReadFcn = @(filename)readAndPreprocessImage(filename);
 [trainingSet, testSet] = splitEachLabel(imds, 0.3, 'randomize');
 
 % Get the network weights for the second convolutional layer
-w1 = net.Layers(2).Weights;
+%w1 = net.Layers(2).Weights;
 
 % Scale and resize the weights for visualization
-w1 = mat2gray(w1);
-w1 = imresize(w1,5);
+%w1 = mat2gray(w1);
+%w1 = imresize(w1,5);
 
 % Display a montage of network weights. There are 96 individual sets of
 % weights in the first layer.
-figure
-montage(w1)
-title('First convolutional layer weights')
+%figure
+%montage(w1)
+%title('First convolutional layer weights')
 
 %featureLayer = 'fc7'; %4096 fully connected layer
 %featureLayer = 'fc8'; % 1000 fully connected layer

@@ -1,7 +1,26 @@
 function BagOfWord()
 
-% Set training data
+%% Check data
 rootFolder = 'cifar10Train';
+testFolder = 'cifar10Test';
+
+if exist(rootFolder,'dir') ~= 7    
+    fprintf("\nNo data train, please run DownloadCIFAR10 file... \n");
+    return;
+end
+
+if exist(testFolder,'dir') ~= 7
+    fprintf("\nNo data Test, please run DownloadCIFAR10 file... \n");
+    return;
+end
+
+if exist('cifar-10-batches-mat','dir') ~= 7
+    fprintf("\nNo cifar-10-batches-mat folder , please run DownloadCIFAR10 file... \n");
+    return;
+end  
+
+% Set training data
+%rootFolder = 'cifar10Train';
 categories = {'Deer','Dog','Frog','Cat','Ship'};
 imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource', 'foldernames');
 imds.ReadFcn = @readFunctionTrain;
@@ -28,19 +47,11 @@ else
     save('minBow_bag.mat','bag');
 end
 
-% img = readimage(imds, 1);
-% featureVector = encode(bag, img);
-% figure
-% bar(featureVector)
-% title('Visual word occurrences')
-% xlabel('Visual word index')
-% ylabel('Frequency of occurrence')
-
 % Train Data
 fprintf("train Image Category Classifier....");
 categoryClassifier = trainImageCategoryClassifier(imds, bag);
 % Test data
-testFolder = 'cifar10Test';
+%testFolder = 'cifar10Test';
 imds = imageDatastore(fullfile(testFolder, categories), 'LabelSource', 'foldernames');
 
 fprintf("Evaluate matrix....");

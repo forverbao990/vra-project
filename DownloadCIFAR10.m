@@ -6,6 +6,21 @@
 
 % Copyright 2017 The MathWorks, Inc.
 
+%% BaoDuong: Remove folder if folder exists
+rootFolder = 'cifar10Train';
+testFolder = 'cifar10Test';
+if exist(rootFolder,'dir') == 7    
+    rmdir(fullfile(rootFolder),'s');
+end
+
+if exist(testFolder,'dir') == 7
+    rmdir(fullfile(testFolder),'s');
+end
+
+if exist('cifar-10-batches-mat','dir') == 7
+    rmdir(fullfile('cifar-10-batches-mat'),'dir');
+end
+
 %% Download the CIFAR-10 dataset
 if ~exist('cifar-10-batches-mat','dir')
     cifar10Dataset = 'cifar-10-matlab';
@@ -16,7 +31,7 @@ if ~exist('cifar-10-batches-mat','dir')
     delete([cifar10Dataset,'.tar.gz'])
     untar([cifar10Dataset,'.tar'])
     delete([cifar10Dataset,'.tar'])
-end    
+end 
    
 %% Prepare the CIFAR-10 dataset
 if ~exist('cifar10Train','dir')
