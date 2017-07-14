@@ -1,23 +1,8 @@
-function HOG_Features()
+function HOG_Features(rootFolder, testFolder, exportFolder)
 
 %% Check data
-rootFolder = 'cifar10Train';
-testFolder = 'cifar10Test';
-
-if exist(rootFolder,'dir') ~= 7    
-    fprintf("\nNo data train, please run DownloadCIFAR10 file... \n");
-    return;
-end
-
-if exist(testFolder,'dir') ~= 7
-      fprintf("\nNo data Test, please run DownloadCIFAR10 file... \n");
-        return;
-end
-
-if exist('cifar-10-batches-mat','dir') ~= 7
-      fprintf("\nNo cifar-10-batches-mat folder , please run DownloadCIFAR10 file... \n");
-        return;
-end  
+%rootFolder = 'cifar10Train';
+%testFolder = 'cifar10Test';
 
 % Set training data
 categories = {'Deer','Dog','Frog','Cat','Ship'};
@@ -34,19 +19,21 @@ countEachLabel(testSet)
 img = readimage(trainingSet, 1);
 
 % Extract HOG features and HOG visualization
-%[hog_2x2, vis2x2] = extractHOGFeatures(img,'CellSize',[2 2]);
-[hog_4x4, vis4x4] = extractHOGFeatures(img,'CellSize',[4 4]);
-
 cellSize = [4 4];
-hogFeatureSize = length(hog_4x4);
+cellType = '4x4';
+
+%cellSize = [8 8];
+%cellType = '8x8';
+[hog, ~] = extractHOGFeatures(img,'CellSize',cellSize);
+
+hogFeatureSize = length(hog);
 
 numImages = numel(trainingSet.Files);
 trainingFeatures = zeros(numImages, hogFeatureSize, 'single');
-fprintf("\nExtract HOG Features from training set....");
 
-
-if exist('trainingFeatures.mat','file') == 2
-    load('trainingFeatures.mat');
+fprintf("\n1.Extract HOG Features from training set....");
+if exist(strcat(exportFolder,'\trainingFeatures_',cellType,'.mat'),'file') == 2
+    load(fullfile(exportFolder,strcat('trainingFeatures_',cellType,'.mat')));
 else
     for i = 1:numImages
     img = readimage(trainingSet, i);
@@ -57,35 +44,38 @@ else
     img = imbinarize(img);
     trainingFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);
     end
-    save('trainingFeatures.mat','trainingFeatures');
+    save(fullfile(exportFolder,strcat('trainingFeatures_',cellType,'.mat')),'trainingFeatures');
 end
 
 % Get labels for each image.
 trainingLabels = trainingSet.Labels;
 
-if exist('classifier.mat','file') == 2
-    load('classifier.mat');
+if exist(strcat(exportFolder,'\classifier_',cellType,'.mat'),'file') == 2
+    load(fullfile(exportFolder,strcat('classifier_',cellType,'.mat')));
+    %load(strcat('classifier_',cellType,'.mat'));
 else
     % fitcecoc uses SVM learners and a 'One-vs-One' encoding scheme.
     classifier = fitcecoc(trainingFeatures, trainingLabels);
-    save('classifier.mat','classifier');
+    %save(strcat('classifier_',cellType,'.mat'),'classifier');
+    save(fullfile(exportFolder,strcat('classifier_',cellType,'.mat')),'classifier');
 end
 
 % Extract HOG features from the test set. The procedure is similar to what
 % was shown earlier and is encapsulated as a helper function for brevity.
-fprintf("\nExtract HOG Features from test set....");
+fprintf("\n2.Extract HOG Features from test set....");
 [testFeatures, testLabels] = helperExtractHOGFeaturesFromImageSet(testSet, hogFeatureSize, cellSize);
 
 % Make class predictions using the test features.
+fprintf("\n3.Make class predictions....");
 predictedLabels = predict(classifier, testFeatures);
 
 % Tabulate the results using a confusion matrix.
-fprintf("\nShow result matrix....");
+fprintf("\n4.Show result matrix....");
 [confMat,order] = confusionmat(testLabels, predictedLabels);
-fprintf('\n');
+fprintf('\n5.Display Confusion Matrix');
 % Convert confusion matrix into percentage form
 %confMat = bsxfun(@rdivide,confMat,sum(confMat,2));
-DisplayConfusionMatrix(confMat, order)
+DisplayConfusionMatrix(confMat, order);
 
 % Display the mean accuracy
 mean(diag(confMat))
