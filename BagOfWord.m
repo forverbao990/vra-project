@@ -1,23 +1,4 @@
-function BagOfWord()
-
-%% Check data
-rootFolder = 'cifar10Train';
-testFolder = 'cifar10Test';
-
-if exist(rootFolder,'dir') ~= 7    
-    fprintf("\nNo data train, please run DownloadCIFAR10 file... \n");
-    return;
-end
-
-if exist(testFolder,'dir') ~= 7
-    fprintf("\nNo data Test, please run DownloadCIFAR10 file... \n");
-    return;
-end
-
-if exist('cifar-10-batches-mat','dir') ~= 7
-    fprintf("\nNo cifar-10-batches-mat folder , please run DownloadCIFAR10 file... \n");
-    return;
-end  
+function BagOfWord(rootFolder, testFolder, exportFolder)
 
 % Set training data
 %rootFolder = 'cifar10Train';
@@ -30,21 +11,24 @@ minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a cate
 %minSetCount = 50;
 
 % Use splitEachLabel method to trim the set.
-if exist('minBow_imds.mat','file') == 2
-    load('minBow_imds.mat');
+%if exist('minBow_imds.mat','file') == 2
+if exist(strcat(exportFolder,'\minBow_imds_',cellType,'.mat'),'file') == 2
+    load(fullfile(exportFolder,strcat('minBow_imds','.mat')));
 else
     imds = splitEachLabel(imds, minSetCount, 'randomize');
-    save('minBow_imds.mat','imds');
+    %save('minBow_imds.mat','imds');
+    save(fullfile(exportFolder,strcat('minBow_imds','.mat')),'imds');
 end
 
 % Notice that each set now has exactly the same number of images.
 countEachLabel(imds)
-if exist('minBow_bag.mat','file') == 2
-    load('minBow_bag.mat');
+%if exist('minBow_bag.mat','file') == 2
+if exist(strcat(exportFolder,'\minBow_bag',cellType,'.mat'),'file') == 2
+    load(fullfile(exportFolder,strcat('minBow_imds','.mat')));
 else
     fprintf("Build Bag Of Features....");
     bag = bagOfFeatures(imds);
-    save('minBow_bag.mat','bag');
+    save(fullfile(exportFolder,strcat('minBow_bag','.mat')),'bag');
 end
 
 % Train Data

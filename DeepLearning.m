@@ -57,9 +57,9 @@ imds.ReadFcn = @(filename)readAndPreprocessImage(filename);
 %montage(w1)
 %title('First convolutional layer weights')
 
-%featureLayer = 'fc7'; %4096 fully connected layer
+featureLayer = 'fc7'; %4096 fully connected layer
 %featureLayer = 'fc8'; % 1000 fully connected layer
-featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
+%featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
 
 if exist(strcat(exportFolder,'\trainingFeatures_',featureLayer,'.mat'),'file') == 2 
     %load(strcat('export', '/','deep_imds'), '-mat');
@@ -87,8 +87,14 @@ else
     save(fullfile(exportFolder,strcat('classifier_', featureLayer,'.mat')),'classifier');
 end
 
-% Extract test features using the CNN
-testFeatures = activations(net, testSet, featureLayer, 'MiniBatchSize',32);
+if exist(strcat(exportFolder,'\dpTestFeatures_', featureLayer,'.mat'),'file') == 2 
+    %load(strcat('export', '/','deep_imds'), '-mat');
+    load(fullfile(exportFolder,strcat('dpTestFeatures_',featureLayer,'.mat')));
+else    
+    % Extract test features using the CNN
+    testFeatures = activations(net, testSet, featureLayer, 'MiniBatchSize',32);
+    save(fullfile(exportFolder,strcat('dpTestFeatures_', featureLayer,'.mat')),'testFeatures');
+end
 
 % Pass CNN image features to trained classifier
 predictedLabels = predict(classifier, testFeatures);
