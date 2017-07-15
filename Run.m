@@ -19,9 +19,9 @@ if exist('cifar-10-batches-mat','dir') ~= 7
 end
 
 %% Run HOG_Features file
-HOG_Features(rootFolder, testFolder, exportFolder);
+%%HOG_Features(rootFolder, testFolder, exportFolder);
 
 %% Run Deep_Learning
-%%DeepLearning(rootFolder, testFolder,exportFolder);
+DeepLearning(rootFolder, testFolder,exportFolder);
 
 %%BagOfWord(rootFolder, testFolder, exportFolder);
