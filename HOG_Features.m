@@ -19,11 +19,11 @@ countEachLabel(testSet)
 img = readimage(trainingSet, 1);
 
 % Extract HOG features and HOG visualization
-cellSize = [4 4];
-cellType = '4x4';
+%cellSize = [4 4];
+%ellType = '4x4';
 
-%cellSize = [8 8];
-%cellType = '8x8';
+cellSize = [8 8];
+cellType = '8x8';
 [hog, ~] = extractHOGFeatures(img,'CellSize',cellSize);
 
 hogFeatureSize = length(hog);
@@ -72,14 +72,14 @@ predictedLabels = predict(classifier, testFeatures);
 % Tabulate the results using a confusion matrix.
 fprintf("\n4.Show result matrix....");
 [confMat,order] = confusionmat(testLabels, predictedLabels);
-fprintf('\n5.Display Confusion Matrix');
+fprintf('\n5.Display Confusion Matrix \n');
 % Convert confusion matrix into percentage form
 %confMat = bsxfun(@rdivide,confMat,sum(confMat,2));
 DisplayConfusionMatrix(confMat, order);
 
 % Display the mean accuracy
 %mean(diag(confMat))
-actual = sum(predictedLabels==testLabels)/numel(predictedLabels);
+actual = sum(predictedLabels==testLabels)/numel(predictedLabels) * 100;
 fprintf('\n Actual = [%f]\n', actual);
 
 end

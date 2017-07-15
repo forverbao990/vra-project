@@ -1,4 +1,4 @@
-function DeepLearning(rootFolder, exportFolder)
+function DeepLearning(rootFolder, testFolder,exportFolder)
 
 % Set training data
 %rootFolder = 'cifar10Train';
@@ -27,22 +27,27 @@ minSetCount = min(tbl{:,2}); % determine the smallest amount of images in a cate
 imds = splitEachLabel(imds, minSetCount, 'randomize');
 
 % Notice that each set now has exactly the same number of images.
-countEachLabel(imds)
+%countEachLabel(imds);
 
-net = alexnet()
+net = alexnet();
 % Inspect the first layer
-net.Layers(1)
+%net.Layers(1);
 
 % Inspect the last layer
-net.Layers(end)
+%net.Layers(end);
 
 % Number of class names for ImageNet classification task
-numel(net.Layers(end).ClassNames)
+numel(net.Layers(end).ClassNames);
 
 % Set the ImageDatastore ReadFcn
-imds.ReadFcn = @(filename)readAndPreprocessImage(filename);
+imds.ReadFcn = @(filename)readFunctionTrain(filename);
 
-[trainingSet, testSet] = splitEachLabel(imds, 0.3, 'randomize');
+[trainingSet, ~] = splitEachLabel(imds, 0.3, 'randomize');
+
+testSet    = imageDatastore(fullfile(testFolder, categories), 'IncludeSubfolders', true,'LabelSource', 'foldernames');
+testSet.ReadFcn = @readFunctionTrain;
+
+%countEachLabel(testSet);
 
 % Get the network weights for the second convolutional layer
 %w1 = net.Layers(2).Weights;
@@ -57,9 +62,9 @@ imds.ReadFcn = @(filename)readAndPreprocessImage(filename);
 %montage(w1)
 %title('First convolutional layer weights')
 
-featureLayer = 'fc7'; %4096 fully connected layer
+%featureLayer = 'fc7'; %4096 fully connected layer
 %featureLayer = 'fc8'; % 1000 fully connected layer
-%featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
+featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
 
 if exist(strcat(exportFolder,'\trainingFeatures_',featureLayer,'.mat'),'file') == 2 
     %load(strcat('export', '/','deep_imds'), '-mat');
@@ -105,14 +110,12 @@ testLabels = testSet.Labels;
 % Tabulate the results using a confusion matrix.
 [confMat,order] = confusionmat(testLabels, predictedLabels);
 
+% Display the mean accuracy
 actual = sum(predictedLabels==testLabels)/numel(predictedLabels);
 fprintf('\n Actual = [%f]\n', actual);
 % Convert confusion matrix into percentage form
 confMat = bsxfun(@rdivide,confMat,sum(confMat,2));
 DisplayConfusionMatrix(confMat, order);
-% Display the mean accuracy
-%mean(diag(confMat))
-
 
 end
 
