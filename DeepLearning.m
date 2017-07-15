@@ -103,15 +103,15 @@ predictedLabels = predict(classifier, testFeatures);
 testLabels = testSet.Labels;
 
 % Tabulate the results using a confusion matrix.
-confMat = confusionmat(testLabels, predictedLabels);
+[confMat,order] = confusionmat(testLabels, predictedLabels);
 
 actual = sum(predictedLabels==testLabels)/numel(predictedLabels);
-fprintf('actual = [%f]', actual);
+fprintf('\n Actual = [%f]\n', actual);
 % Convert confusion matrix into percentage form
-confMat = bsxfun(@rdivide,confMat,sum(confMat,2))
-
+confMat = bsxfun(@rdivide,confMat,sum(confMat,2));
+DisplayConfusionMatrix(confMat, order);
 % Display the mean accuracy
-mean(diag(confMat))
+%mean(diag(confMat))
 
 
 end

@@ -78,7 +78,9 @@ fprintf('\n5.Display Confusion Matrix');
 DisplayConfusionMatrix(confMat, order);
 
 % Display the mean accuracy
-mean(diag(confMat))
+%mean(diag(confMat))
+actual = sum(predictedLabels==testLabels)/numel(predictedLabels);
+fprintf('\n Actual = [%f]\n', actual);
 
 end
 
