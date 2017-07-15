@@ -9,21 +9,21 @@
 %% BaoDuong: Remove folder if folder exists
 rootFolder = 'cifar10Train';
 testFolder = 'cifar10Test';
-% if ~exist(rootFolder,'dir') == 7    
+% if exist(rootFolder,'dir') == 7    
 %     rmdir(fullfile(rootFolder),'s');
 % end
 % 
-% if ~exist(testFolder,'dir') == 7
+% if exist(testFolder,'dir') == 7
 %     rmdir(fullfile(testFolder),'s');
 % end
 
-% if ~exist('cifar-10-batches-mat','dir') == 7
+% if exist('cifar-10-batches-mat','dir') == 7
 %     mkdir(fullfile('cifar-10-batches-mat'),'s');
 %     %rmdir(fullfile('cifar-10-batches-mat'),'s');
 % end
 
-if ~exist('export','dir') == 7
-    mkdir(fullfile('export'),'s');
+if exist(fullfile('export'),'dir') ~= 7
+    mkdir(fullfile('export'));
 end
 
 %% Download the CIFAR-10 dataset
