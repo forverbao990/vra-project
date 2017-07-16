@@ -22,6 +22,9 @@ end
 %%HOG_Features(rootFolder, testFolder, exportFolder);
 
 %% Run Deep_Learning
-DeepLearning(rootFolder, testFolder,exportFolder);
+%%DeepLearning(rootFolder, testFolder,exportFolder);
 
-%%BagOfWord(rootFolder, testFolder, exportFolder);
+%% Bag Of Word
+%Type = 'BoW';       % 1.all parameter is default value
+Type = 'CustomBow'; % 2. 'Detector' VocabularySize = 1000
+BagOfWord(rootFolder, testFolder, exportFolder, Type);
