@@ -32,7 +32,7 @@ else
         bag = bagOfFeatures(imds);
     else
         extractorFcn = @exampleBagOfFeaturesExtractor;
-        bag = bagOfFeatures(imds, 'PointSelection', 'Detector', 'CustomExtractor',extractorFcn);
+        bag = bagOfFeatures(imds, 'CustomExtractor',extractorFcn);
     end 
     
     save(fullfile(exportFolder,strcat('bag',Type,'.mat')),'bag');
