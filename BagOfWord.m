@@ -52,8 +52,9 @@ else
 end
 
 fprintf("Evaluate matrix....");
-evaluate(categoryClassifier, imds);
-%mean(diag(confMatrixTest))
+confMatrixTest = evaluate(categoryClassifier, imds);
+actual = mean(diag(confMatrixTest)) * 100;
+fprintf('\n Actual = [%f]\n', actual);
 
 end
 

@@ -1,4 +1,4 @@
-function HOG_Features(rootFolder, testFolder, exportFolder)
+function HOG_Features(rootFolder, testFolder, exportFolder, cellSize, cellType)
 
 %% Check data
 %rootFolder = 'cifar10Train';
@@ -17,13 +17,6 @@ countEachLabel(trainingSet)
 countEachLabel(testSet)
 
 img = readimage(trainingSet, 1);
-
-% Extract HOG features and HOG visualization
-%cellSize = [4 4];
-%ellType = '4x4';
-
-cellSize = [8 8];
-cellType = '8x8';
 [hog, ~] = extractHOGFeatures(img,'CellSize',cellSize);
 
 hogFeatureSize = length(hog);

@@ -19,12 +19,23 @@ if exist('cifar-10-batches-mat','dir') ~= 7
 end
 
 %% Run HOG_Features file
-%%HOG_Features(rootFolder, testFolder, exportFolder);
+% Extract HOG features and HOG visualization
+
+%cellSize = [4 4];
+%ellType = '4x4';
+
+%cellSize = [8 8];
+%cellType = '8x8';
+%HOG_Features(rootFolder, testFolder, exportFolder, cellSize, cellType);
 
 %% Run Deep_Learning
-%%DeepLearning(rootFolder, testFolder,exportFolder);
+
+%featureLayer = 'fc7'; %4096 fully connected layer
+%featureLayer = 'fc8'; % 1000 fully connected layer
+%featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
+%DeepLearning(rootFolder, testFolder,exportFolder, featureLayer);
 
 %% Bag Of Word
 %Type = 'BoW';       % 1.all parameter is default value
-Type = 'CustomBow'; % 2. 'Detector' VocabularySize = 1000
-BagOfWord(rootFolder, testFolder, exportFolder, Type);
+%Type = 'CustomBow'; % 2. 'Detector' VocabularySize = 1000
+%BagOfWord(rootFolder, testFolder, exportFolder, Type);

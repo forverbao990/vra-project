@@ -1,4 +1,4 @@
-function DeepLearning(rootFolder, testFolder,exportFolder)
+function DeepLearning(rootFolder, testFolder,exportFolder, featureLayer)
 
 % Set training data
 categories = {'Deer','Dog','Frog','Cat','Ship'};
@@ -35,10 +35,6 @@ imds.ReadFcn = @(filename)readFunctionTrain(filename);
 
 testSet    = imageDatastore(fullfile(testFolder, categories), 'IncludeSubfolders', true,'LabelSource', 'foldernames');
 testSet.ReadFcn = @readFunctionTrain;
-
-featureLayer = 'fc7'; %4096 fully connected layer
-%featureLayer = 'fc8'; % 1000 fully connected layer
-%featureLayer = 'conv4'; %Convolution: 384 3x3x192 convolutions with stride [1  1] and padding [1  1]
 
 if exist(strcat(exportFolder,'\trainingFeatures_',featureLayer,'.mat'),'file') == 2 
     %load(strcat('export', '/','deep_imds'), '-mat');
@@ -85,7 +81,7 @@ testLabels = testSet.Labels;
 [confMat,order] = confusionmat(testLabels, predictedLabels);
 
 % Display the mean accuracy
-actual = sum(predictedLabels==testLabels)/numel(predictedLabels);
+actual = sum(predictedLabels==testLabels)/numel(predictedLabels) * 100;
 fprintf('\n Actual = [%f]\n', actual);
 % Convert confusion matrix into percentage form
 confMat = bsxfun(@rdivide,confMat,sum(confMat,2));
